@@ -3,15 +3,15 @@ kind: CronJob
 metadata:
   name: go-script-cronjob
 spec:
-  schedule: "0 1 * * *"  # This schedules the job to run daily at 1 AM. Modify according to your needs.
+  schedule: "0 1 * * *"
   jobTemplate:
     spec:
       template:
         spec:
           containers:
             - name: go-script-container
-              image: your-docker-registry/your-go-script-image:latest  # Replace with your actual image path
-              command: ["/home/cronjob/cronjob"]  # Ensure this matches your ENTRYPOINT or executable path
+              image: =
+              command: ["/home/cronjob/cronjob"]
               securityContext:
                 readOnlyRootFilesystem: true
                 runAsNonRoot: true

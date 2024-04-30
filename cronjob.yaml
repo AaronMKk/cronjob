@@ -10,8 +10,8 @@ spec:
         spec:
           containers:
             - name: go-script-container
-              image: your-docker-registry/your-go-script-image:latest  # Replace with your actual image path
-              command: ["/home/cronjob/cronjob"]  # Ensure this matches your ENTRYPOINT or executable path
+              image: =
+              command: ["/home/cronjob/cronjob"]
               securityContext:
                 readOnlyRootFilesystem: true
                 runAsNonRoot: true

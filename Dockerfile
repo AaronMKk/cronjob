@@ -12,7 +12,7 @@ RUN dnf -y update --repo OS --repo update && \
     groupadd -g 1000 cronjob && \
     useradd -u 1000 -g cronjob -s /sbin/nologin -m cronjob && \
     echo > /etc/issue && echo > /etc/issue.net && echo > /etc/motd && \
-    sed -i 's/^PASS_MAX_DAYS.*/PASS_MAX_DAYS   90/' /etc/login.defs && \ # Set password expiration policies
+    sed -i 's/^PASS_MAX_DAYS.*/PASS_MAX_DAYS   90/' /etc/login.defs && \
     echo "umask 027" >> /root/.bashrc && \
     echo 'set +o history' >> /root/.bashrc
 
@@ -20,7 +20,7 @@ RUN dnf -y update --repo OS --repo update && \
 USER cronjob
 WORKDIR /home/cronjob
 COPY --chown=cronjob --from=BUILDER /go/src/github.com/openmerlin/cronjob/cronjob /home/cronjob
-RUN chmod 550 /home/cronjob/cronjob && \  # Restrict permissions for the cronjob binary
+RUN chmod 550 /home/cronjob/cronjob && \
     echo "umask 027" >> /home/cronjob/.bashrc && \
     echo 'set +o history' >> /home/cronjob/.bashrc
 

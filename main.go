@@ -1,14 +1,23 @@
 package main
 
 import (
+	"awesomeProject/config"
 	"bytes"
 	"encoding/json"
+	"flag"
 	"fmt"
+	"github.com/opensourceways/server-common-lib/logrusutil"
+	"github.com/sirupsen/logrus"
 	"io/ioutil"
 	"net/http"
+	"os"
+
+	liboptions "github.com/opensourceways/server-common-lib/options"
 )
 
 const (
+	component = "merlin-cronjob"
+
 	testGetURL = "https://dsapi.test.osinfra.cn/query/modelfoundry/download/count"
 	ProdGetURL = "https://dsapi.test.osinfra.cn/query/modelfoundry/download/count"
 
@@ -28,7 +37,7 @@ type UpdateRepo struct {
 	DownloadCount int `json:"download_count"`
 }
 
-func fetchDownloadCounts() (*DownloadData, error) {
+func fetchDownloadCounts(cfg config.Config) (*DownloadData, error) {
 	resp, err := http.Get(testGetURL)
 	if err != nil {
 		return nil, err
@@ -69,8 +78,39 @@ func updateRepo(id string, count int) error {
 	return nil
 }
 
+type options struct {
+	service   liboptions.ServiceOptions
+	removeCfg bool
+}
+
+func gatherOptions(fs *flag.FlagSet, args ...string) options {
+	var o options
+
+	o.service.AddFlags(fs)
+
+	fs.BoolVar(
+		&o.removeCfg, "rm-cfg", false,
+		"whether remove the cfg file after initialized.",
+	)
+
+	if err := fs.Parse(args); err != nil {
+		fs.PrintDefaults()
+
+		logrus.Fatalf("failed to parse cmdline %s", err)
+	}
+
+	return o
+}
+
 func main() {
-	data, err := fetchDownloadCounts()
+	logrusutil.ComponentInit(component)
+
+	o := gatherOptions(flag.NewFlagSet(os.Args[0], flag.ExitOnError), os.Args[1:]...)
+
+	// cfg
+	cfg, err := config.LoadConfig(o.service.ConfigFile, o.removeCfg)
+
+	data, err := fetchDownloadCounts(cfg)
 	if err != nil {
 		fmt.Printf("Error fetching download counts: %v\n", err)
 		return

@@ -3,7 +3,7 @@ kind: CronJob
 metadata:
   name: go-script-cronjob
 spec:
-  schedule: "0 1 * * *"  # This schedules the job to run daily at 1 AM. Modify according to your needs.
+  schedule: "0 1 * * *"
   jobTemplate:
     spec:
       template:

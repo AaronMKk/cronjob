@@ -21,3 +21,9 @@ WORKDIR /home/cronjob
 COPY  --chown=cronjob --from=BUILDER /go/src/github.com/openmerlin/cronjob/cronjob /home/cronjob
 
 ENTRYPOINT ["/home/cronjob/cronjob"]
+
+sed -i 's/^PASS_MAX_DAYS.*/PASS_MAX_DAYS   90/' /etc/login.defs && \
+RUN chmod 550 /home/modelfoundry/merlin-server && \
+    [ ${MODE} == "release" ] && rm /home/modelfoundry/cmd || chmod 550 /home/modelfoundry/cmd && \
+    echo "umask 027" >> /home/modelfoundry/.bashrc && \
+    echo 'set +o history' >> /home/modelfoundry/.bashrc
